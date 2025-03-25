@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container results">
+        <h1>Risk Assessment Results</h1>
+        
+        <div class="summary">
+            <h2>Overall Risk Level: {{ risk_assessment.level }}</h2>
+            <p>Total Score: {{ total_score }}</p>
+        </div>
+        
+        <div class="risk-details">
+            <h3>Risk Level Details</h3>
+            <table class="risk-table">
+                <thead>
+                    <tr>
+                        <th>Score Range</th>
+                        <th>Risk Level</th>
+                        <th colspan="2">Length of Probation Period</th>
+                        <th>Intensity of Supervision</th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th>Sentenced to 1 year Imprisonment or less</th>
+                        <th>All other Cases</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="{{ 'highlighted' if total_score <= 17 else '' }}">
+                        <td>17 and below</td>
+                        <td>Low Risk (Level 1)</td>
+                        <td>6 months</td>
+                        <td>1 year</td>
+                        <td>Once in 2 months</td>
+                    </tr>
+                    <tr class="{{ 'highlighted' if total_score > 17 and total_score <= 28 else '' }}">
+                        <td>18 to 28</td>
+                        <td>Medium Risk (Level 2)</td>
+                        <td>6 months</td>
+                        <td>1 year</td>
+                        <td>Once a month</td>
+                    </tr>
+                    <tr class="{{ 'highlighted' if total_score > 28 and total_score <= 39 else '' }}">
+                        <td>29 to 39</td>
+                        <td>High Risk (Level 3)</td>
+                        <td>1 year</td>
+                        <td>2 years</td>
+                        <td>Twice a month</td>
+                    </tr>
+                    <tr class="{{ 'highlighted' if total_score > 39 else '' }}">
+                        <td>40 and above</td>
+                        <td>Very High Risk (Level 4)</td>
+                        <td>2 years</td>
+                        <td>3 years</td>
+                        <td>Twice a month</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="your-assessment">
+            <h3>Your Assessment</h3>
+            <p><strong>Risk Level:</strong> {{ risk_assessment.level }}</p>
+            <p><strong>Probation Period (if sentenced to 1 year imprisonment or less):</strong> {{ risk_assessment.probation_sentenced }}</p>
+            <p><strong>Probation Period (all other cases):</strong> {{ risk_assessment.probation_other }}</p>
+            <p><strong>Supervision Intensity:</strong> {{ risk_assessment.supervision }}</p>
+        </div>
+        
+        <div class="segment-scores">
+            <h3>Segment Scores</h3>
+            <table class="scores-table">
+                <thead>
+                    <tr>
+                        <th>Segment</th>
+                        <th>Score</th>
+                        <th>Threshold</th>
+                        <th>Program Recommendation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for segment_id in range(1, 10) %}
+                    <tr class="{{ 'above-threshold' if subtotals[segment_id] >= segment_thresholds[segment_id]['threshold'] else '' }}">
+                        <td>{{ segment_titles[segment_id] }}</td>
+                        <td>{{ subtotals[segment_id] }}</td>
+                        <td>{{ segment_thresholds[segment_id]['threshold'] }}</td>
+                        <td>
+                            {% if subtotals[segment_id] >= segment_thresholds[segment_id]['threshold'] %}
+                            {{ segment_thresholds[segment_id]['program'] }} ✓
+                            {% else %}
+                            Not required
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="total-row">
+                        <td><strong>TOTAL</strong></td>
+                        <td><strong>{{ total_score }}</strong></td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="programs">
+            <h3>Recommended Programs</h3>
+            <div class="program-list">
+                <h4>Mandatory Programs:</h4>
+                <ul>
+                    {% for program in mandatory_programs %}
+                    <li>{{ program }}</li>
+                    {% endfor %}
+                </ul>
+                
+                <h4>Additional Programs Based on Assessment:</h4>
+                {% if recommended_programs %}
+                <ul>
+                    {% for program in recommended_programs %}
+                    <li>{{ program }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No additional programs recommended based on your assessment.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <a href="{{ url_for('index') }}" class="btn">Start New Assessment</a>
+        </div>
+    </div>
+</body>
+</html>

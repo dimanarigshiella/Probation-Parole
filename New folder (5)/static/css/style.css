@@ -1,0 +1,453 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* START --SHIELLA--*/
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333; 
+    margin: 0;
+    padding: 0;
+    display: flex; /* Enable flexbox */
+    justify-content: center; /* Center horizontally */
+    align-items: center;
+}
+
+.index-body{
+    background: url('../images/1.png') no-repeat center center fixed;
+    background-size: cover; /* Ensures the image covers the entire page */
+}
+
+.new-image {
+    flex: 0; /* Prevent the image from stretching */
+    width: 690px; /* Set the width of the image */
+    margin-top: 550px;
+    height: auto; /* Maintain the aspect ratio */
+    border-radius: 10px; /* Optional: Add rounded corners */
+    margin-left: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effects */
+}
+
+.new-image:hover {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+.main-content {
+    display: flex; /* Enable flexbox for layout */
+    justify-content: flex-start; /* Align the table to the left */
+    align-items: flex-start; /* Align the table to the top */
+    width: 100%; /* Ensure the container spans the full width */
+    padding: 30px; /* Add padding around the content */
+}
+
+@keyframes containerSlideDown {
+    0% {
+        transform: translateY(-100px); /* Start above the viewport */
+        opacity: 0; /* Fully transparent */
+    }
+    100% {
+        transform: translateY(0); /* End at its original position */
+        opacity: 1; /* Fully visible */
+    }
+}
+
+.container {
+    background-color: rgba(216, 242, 255, 0.5); /* Semi-transparent white background */
+    padding: 20px; /* Add padding inside the container */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+    width: 1500px; /* Set a fixed width */
+    height: 1200px; /* Set a fixed height */
+    overflow-y: auto; /* Add a vertical scroll bar if content overflows */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    margin: 30px auto; /* Center the container horizontally */
+    text-align: left; /* Align text to the left */
+    margin-left: 45px;
+    opacity: 0; /* Start fully transparent */
+    animation: containerSlideDown 0.8s ease-out forwards; /* Apply the slide-down animation */
+}   
+
+form {
+    width: 100%; /* Make the form take the full width of the container */
+    transition: opacity 0.5s ease, box-shadow 0.5s ease;
+}
+
+h1 {
+    font-family: 'Bebas Neue', sans-serif; /* Apply Bebas Neue font */
+    text-align: center;
+    padding: 10px;
+    font-size: 105px;
+    color: black; /* White text for the header */
+}
+
+/* END --SHIELLA--*/
+
+h2, h3 {
+    font-family: 'Montserrat', sans-serif; /* Apply Montserrat font */
+    font-size: 54px; /* Adjust the font size */
+    font-weight: 500; /* Set the font weight */
+    color: #000000; /* Set the text color */
+    margin-bottom: 15px; /* Add spacing below the question */
+}
+
+p {
+    margin-bottom: 15px;
+    font-family: 'Montserrat', sans-serif;
+    margin-left: 30px;
+    text-align: center;
+    font-size: 45px;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #3498db;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 50px;
+    transition: background-color 0.3s;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background-color: #ecf0f1;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background-color: #3498db;
+    transition: width 0.3s ease;
+    width: attr(data-progress '%');
+}
+
+.question {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #2a2d2e;
+    padding-bottom: 10px;
+    margin-left: 70px;
+    font-family: "Montserrat", sans-serif;
+}
+
+/* Smooth pulsing effect for highlighting */
+@keyframes pulseBorder {
+    from {
+        border-color: red;
+        background-color: rgba(255, 0, 0, 0.1);
+    }
+    to {
+        border-color: darkred;
+        background-color: rgba(255, 0, 0, 0.2);
+    }
+}
+
+
+.options {
+    margin-top: 20px;
+    margin-left: 75px;
+}
+
+.option {
+    margin-bottom: 10px;
+    font-size: 40px;
+    color: rgb(25, 25, 25);
+}
+
+.option input[type="radio"] {
+    appearance: none; /* Remove default browser styling */
+    -webkit-appearance: none; /* For Safari */
+    width: 35px; /* Set the width of the radio button */
+    height: 35px; /* Set the height of the radio button */
+    border: 3px solid black; /* Thicker border */
+    border-radius: 50%; /* Make it circular */
+    outline: none; /* Remove the default outline */
+    cursor: pointer; /* Change the cursor to a pointer */
+    background-color: white; /* Set the background color */
+    transition: all 0.3s ease; /* Add a smooth transition effect */
+}
+
+.option input[type="radio"]:checked {
+    background-color: rgb(0, 0, 0); /* Change the background color when selected */
+    border-color: black; /* Change the border color when selected */
+}
+
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+/* Results page styles */
+.results h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.summary {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.risk-table, .scores-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.risk-table th, .risk-table td,
+.scores-table th, .scores-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.risk-table th, .scores-table th {
+    background-color: #f2f2f2;
+}
+
+.highlighted {
+    background-color: #e8f4f8;
+    font-weight: bold;
+}
+
+.above-threshold {
+    background-color: #e8f8e8;
+}
+
+.total-row {
+    background-color: #f2f2f2;
+}
+
+.program-list {
+    margin-top: 15px;
+}
+
+.program-list h4 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.program-list ul {
+    list-style-type: disc;
+    margin-left: 20px;
+}
+
+.image-cell {
+    text-align: center; /* Center the images horizontally */
+    padding: 10px; /* Add some spacing around the images */
+}
+
+.table-images img {
+    width: 190px; /* Set the width of the images */
+    height: auto; /* Maintain the aspect ratio */
+    border-radius: 10px; /* Optional: Add rounded corners */
+    margin: 10px; /* Add spacing around the images */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effects */
+}
+
+.table-images img:hover {
+    transform: translateY(-5px); /* Slightly move the image up on hover */
+}
+
+/* Main table styling */
+@keyframes slideDown {
+    0% {
+        transform: translateY(-100px); /* Start above the viewport */
+        opacity: 0; /* Fully transparent */
+    }
+    100% {
+        transform: translateY(0); /* End at its original position */
+        opacity: 1; /* Fully visible */
+    }
+}
+
+.main-table {
+    flex: 1;
+    margin-top: -1px;
+    margin-right: 20px;
+    width: auto; /* Adjust the width of the table as needed */
+    background-color: rgba(105, 188, 233, 0.5); /* Background with transparency */
+    border-color: black;
+    border-collapse: collapse;
+    border-radius: 20px; /* Rounded corners */
+    overflow: hidden; /* Ensures rounded corners apply to the entire table */
+    color: black; /* Text color */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow */
+    transition: opacity 0.5s ease, box-shadow 0.5s ease; /* Smooth transition for fading and shadow */
+    opacity: 1; /* Fully visible by default */
+    animation: slideDown 0.8s ease-out; /* Apply the slide-down animation */
+}
+
+.main-table:hover {
+    opacity: 0.9; /* Slightly fade the table on hover */
+    box-shadow: 0 30px 30px rgba(0, 0, 0, 0.4); /* Increase shadow intensity on hover */
+}
+
+/* Table header styling */
+.table-header {
+    font-family: 'Bebas Neue', sans-serif; /* Apply Bebas Neue font */
+    text-align: center;
+    padding: 10px;
+    font-size: 42px;
+    color: black; /* White text for the header */
+}
+
+.label {
+    display: block; /* Treat the label as a block element */
+    margin-bottom: 10px; /* Add consistent spacing below the label */
+    font-size: 40px; /* Adjust the font size */
+    color: black; /* Set the label text color */
+    margin-left: 100px; 
+    font-family: "Montserrat", sans-serif;
+}
+
+.input-box, .dropdown-box {
+    display: block; /* Ensure the input and dropdown are block elements */
+    width: 300%; /* Make them take up the full width of their container */
+    max-width: 1650px; /* Set a maximum width for consistency */
+    padding: 15px; /* Add padding inside the input and dropdown */
+    font-size: 40px; /* Adjust the font size */
+    border: 1px solid #ccc; /* Add a border */
+    border-radius: 35px; /* Add rounded corners */
+    margin-bottom: 20px; /* Add consistent spacing below the input or dropdown */
+    box-sizing: border-box; /* Include padding and border in the element's total width */
+    text-align: center;
+    background-size: 25px 25px; 
+    transition: border 0.3s ease, background-color 0.3s ease;
+}
+
+/* Highlighted input and dropdown styling */
+.input-box:invalid,
+.dropdown-box:invalid {
+    border: 70px solid red;
+    background-color: blue;
+    color: gray; 
+}
+
+.dropdown-box option {
+    color: black; /* Set the color for all options */
+}
+
+.dropdown-box option[value=""] {
+    color: gray; /* Set the color for the placeholder option */
+}
+
+
+/* Center the button in the table */
+.table-button {
+    text-align: center;
+    padding: 20px;
+}
+
+.input-box::placeholder {
+    font-size: 25px; /* Adjust the font size for the placeholder */
+    color: #999; /* Optional: Change the placeholder text color */
+    font-weight: normal; /* Optional: Adjust the font weight */
+    text-align: center;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #3aa7d0; /* Green background */
+    color: black; /* White text */
+    padding: 15px 30px; /* Add padding for a larger button */
+    text-decoration: none; /* Remove underline */
+    border: none; /* Remove border */
+    border-radius: 10px; /* Add rounded corners */
+    cursor: pointer; /* Change cursor to pointer */
+    font-size: 30px; /* Adjust font size */
+    font-family: 'Arial', sans-serif; /* Use a clean font */
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+} 
+
+/* Button hover effect */
+.btn-secondary, .btn-next {
+    display: inline-block;
+    background-color: #4b79b3; /* Green background */
+    color: black; /* White text */
+    padding: 15px; /* Add padding for a larger button */
+    text-decoration: none; /* Remove underline */
+    border: none; /* Remove border */
+    border-radius: 10px; /* Add rounded corners */
+    cursor: pointer; /* Change cursor to pointer */
+    font-size: 40px; /* Adjust font size */
+    font-family: 'Arial', sans-serif; /* Use a clean font */
+    font-weight: bold;
+    gap: 310px;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+} 
+
+.btn-next:hover, .btn-secondary:hover, .btn:hover {
+    background-color: #193696; 
+    transform: translateY(-3px); 
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Increase shadow intensity on hover */
+}
+
+.btn-next:active, .btn-secondary:active, .btn:active {
+    background-color: #4b62af; 
+    transform: translateY(1px); /* Slightly move the button down when clicked */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduce shadow intensity when clicked */
+}
+
+.footer {
+    position: fixed; /* Fix the footer at the bottom of the screen */
+    bottom: 0; /* Align it to the bottom */
+    width: 100%; /* Make it span the full width of the screen */
+    height: 10; /* Adjust height automatically based on the image */
+    z-index: 10; /* Ensure it appears above other elements */
+}
+
+.navigation {
+    display: flex; /* Use flexbox for alignment */
+    justify-content: center; /* Center the button horizontally */
+    gap: 50px;
+    margin-top: 30px; /* Add spacing above the button */
+}
+
+
+
+/* END --SHIELLA--*/
+
+/* Specific styles for segment.html */
+
+.segment-images {
+    position: fixed; /* Fix the images to the viewport */
+    top: 30px; /* Position the images 20px from the top */
+    right: 70px; /* Position the images 20px from the right */
+    display: flex;
+    flex-direction: column; /* Align the images vertically */
+    gap: 25px; /* Add spacing between the images */
+    z-index: 1000; /* Ensure the images stay above other elements */
+}
+
+.segment-image {
+    width: 235px; /* Set the width of the images */
+    height: auto; /* Maintain the aspect ratio */
+    border-radius: 10px; /* Optional: Add rounded corners */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for movement and shadow */
+}
+
+.segment-image:hover {
+    transform: translateY(-10px); /* Move the image up by 10px */
+}
+
+.segment-body {
+    background: url('../images/ch.png') no-repeat center center fixed; /* Set the background image */
+    background-size: cover; /* Ensure the background covers the entire container */
+    background-attachment: fixed; /* Fix the background so it doesn't move */
+}

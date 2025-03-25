@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Risk Assessment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="segment-body segment-{{ segment_id }}">
+
+    <img src="{{ url_for('static', filename='images/J.png') }}" alt="New Image" class="new-image">
+
+    <div class="container">
+        <h1>{{ title }}</h1>
+        <p>Part {{ segment_id }} of 9</p>
+        
+        <form action="{{ url_for('segment', segment_id=next_segment) }}" method="post">
+            {% for item in enumerated_questions %}
+            <div class="question">
+                <h3>{{ item.index + 1 }}. {{ item.question.question }}</h3>
+                <div class="options">
+                    {% for j in range(item.question.options|length) %}
+                    <div class="option">
+                        <input type="radio" id="q{{ item.index }}_{{ j }}" name="q{{ item.index }}" value="{{ item.question.options[j].score }}" required>
+                        <label for="q{{ item.index }}_{{ j }}">{{ item.question.options[j].text }} <em>({{ item.question.options[j].score }} points)</em></label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+            
+            <div class="navigation">
+                {% if segment_id > 1 %}
+                <a href="{{ url_for('segment', segment_id=segment_id-1) }}" class="btn btn-secondary">Back</a>
+                {% endif %}
+                
+                {% if segment_id < 9 %}
+                <button type="submit" class="btn-next">Next</button>
+                {% else %}
+                <button type="submit" class="btn btn-primary">Submit</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+    <div class="segment-images">
+        <img src="{{ url_for('static', filename='images/BagongPilipinas.png') }}" alt="PPO Logo" class="segment-image">
+        <img src="{{ url_for('static', filename='images/DOJ.png') }}" alt="DOJ Logo" class="segment-image">
+        <img src="{{ url_for('static', filename='images/PPO.png') }}" alt="Bagong Pilipinas Logo" class="segment-image">
+    </div>
+
+    <script src="{{ url_for('static', filename='js/segment.js') }}"></script>
+</body>
+</html>
