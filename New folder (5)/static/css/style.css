@@ -24,8 +24,8 @@ body {
 
 .new-image {
     flex: 0; /* Prevent the image from stretching */
-    width: 690px; /* Set the width of the image */
-    margin-top: 550px;
+    width: 950px; /* Set the width of the image */
+    margin-top: 950px;
     height: auto; /* Maintain the aspect ratio */
     border-radius: 10px; /* Optional: Add rounded corners */
     margin-left: 10px;
@@ -60,7 +60,9 @@ body {
     padding: 20px; /* Add padding inside the container */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
     width: 1500px; /* Set a fixed width */
-    height: 1200px; /* Set a fixed height */
+    height: auto;  /* Changed from fixed height */
+    min-height: 600px;  /* Added minimum height */
+    max-height: 900px;  /* Added maximum height */
     overflow-y: auto; /* Add a vertical scroll bar if content overflows */
     overflow-x: hidden; /* Prevent horizontal scrolling */
     margin: 30px auto; /* Center the container horizontally */
@@ -275,19 +277,25 @@ p {
 
 .main-table {
     flex: 1;
-    margin-top: -1px;
-    margin-right: 20px;
-    width: auto; /* Adjust the width of the table as needed */
-    background-color: rgba(105, 188, 233, 0.5); /* Background with transparency */
+    margin-top: 25px;
+    margin-right: -10px;
+    width: 700px;
+    min-width:2100px;
+    max-width: 3100px;
+    height: 2000px;  /* Increased height */
+    min-height: 1500px;  /* Increased minimum height */
+    max-height: 1800px;  /* Increased maximum height */
+    background-color: rgba(105, 188, 233, 0.5);
     border-color: black;
     border-collapse: collapse;
-    border-radius: 20px; /* Rounded corners */
-    overflow: hidden; /* Ensures rounded corners apply to the entire table */
-    color: black; /* Text color */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow */
-    transition: opacity 0.5s ease, box-shadow 0.5s ease; /* Smooth transition for fading and shadow */
-    opacity: 1; /* Fully visible by default */
-    animation: slideDown 0.8s ease-out; /* Apply the slide-down animation */
+    border-radius: 20px;
+    overflow-y: auto;  /* Added vertical scroll if needed */
+    overflow-x: hidden;
+    color: black;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.5s ease, box-shadow 0.5s ease;
+    opacity: 1;
+    animation: slideDown 0.8s ease-out;
 }
 
 .main-table:hover {
@@ -307,33 +315,28 @@ p {
 .label {
     display: block; /* Treat the label as a block element */
     margin-bottom: 10px; /* Add consistent spacing below the label */
-    font-size: 40px; /* Adjust the font size */
+    font-size: 50px; /* Adjust the font size */
     color: black; /* Set the label text color */
     margin-left: 100px; 
     font-family: "Montserrat", sans-serif;
 }
 
 .input-box, .dropdown-box {
-    display: block; /* Ensure the input and dropdown are block elements */
-    width: 300%; /* Make them take up the full width of their container */
-    max-width: 1650px; /* Set a maximum width for consistency */
-    padding: 15px; /* Add padding inside the input and dropdown */
-    font-size: 40px; /* Adjust the font size */
-    border: 1px solid #ccc; /* Add a border */
-    border-radius: 35px; /* Add rounded corners */
-    margin-bottom: 20px; /* Add consistent spacing below the input or dropdown */
-    box-sizing: border-box; /* Include padding and border in the element's total width */
+    display: block;
+    width: 100%; /* Changed from 90000px to use percentage */
+    max-width: 2700px; /* Increased from 1650px */
+    min-width: 2000px; /* Added minimum width */
+    padding: 15px 25px; /* Increased horizontal padding */
+    font-size: 60px;
+    border: 1px solid #ccc;
+    border-radius: 35px;
+    margin-bottom: 20px;
+    margin-left: auto; /* Center the input/dropdown */
+    margin-right: auto; /* Center the input/dropdown */
+    box-sizing: border-box;
     text-align: center;
-    background-size: 25px 25px; 
+    background-size: 25px 25px;
     transition: border 0.3s ease, background-color 0.3s ease;
-}
-
-/* Highlighted input and dropdown styling */
-.input-box:invalid,
-.dropdown-box:invalid {
-    border: 70px solid red;
-    background-color: blue;
-    color: gray; 
 }
 
 .dropdown-box option {
@@ -352,7 +355,7 @@ p {
 }
 
 .input-box::placeholder {
-    font-size: 25px; /* Adjust the font size for the placeholder */
+    font-size: 45px; /* Adjust the font size for the placeholder */
     color: #999; /* Optional: Change the placeholder text color */
     font-weight: normal; /* Optional: Adjust the font weight */
     text-align: center;
@@ -360,19 +363,26 @@ p {
 
 .btn {
     display: inline-block;
-    background-color: #3aa7d0; /* Green background */
-    color: black; /* White text */
-    padding: 15px 30px; /* Add padding for a larger button */
-    text-decoration: none; /* Remove underline */
-    border: none; /* Remove border */
-    border-radius: 10px; /* Add rounded corners */
-    cursor: pointer; /* Change cursor to pointer */
-    font-size: 30px; /* Adjust font size */
-    font-family: 'Arial', sans-serif; /* Use a clean font */
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
-} 
+    background-color: #3aa7d0;
+    color: black;
+    padding: 25px 60px; /* Reduced horizontal padding */
+    text-decoration: none;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 35px; /* Increased font size */
+    font-family: 'Arial Black', 'Arial Bold', sans-serif; /* Bolder font */
+    font-weight: 900; /* Maximum font weight */
+    letter-spacing: 2px; /* Added letter spacing */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    min-width: 600px; /* Reduced minimum width */
+    max-width: 800px; /* Added maximum width */
+    width: auto;
+    text-align: center;
+    margin: 20px auto;
+    text-transform: uppercase; /* Make text uppercase */
+}
 
 /* Button hover effect */
 .btn-secondary, .btn-next {
