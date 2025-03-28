@@ -1,10 +1,17 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import os
+import requests
+from datetime import datetime
+import logging
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
-# Segment titles
+GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQozbzTlkkPkrP-9I_Uu9hLTBdeDejmiEzL108wMMPw6oSTlWV_dsyO0ByEHnikt6j1w/exec"
+
+# Segment titles (unchanged)
 segment_titles = {
     1: "CRIMINAL HISTORY",
     2: "PRO-CRIMINAL COMPANIONS",
@@ -16,368 +23,6 @@ segment_titles = {
     8: "MENTAL HEALTH"
 }
 
-# Questions for each segment
-segments = {
-    1: [
-        {
-            "question": "Age at First Misconduct",
-            "options": [
-                {"text": "26 years old and above", "score": 0},
-                {"text": "18-25 years old", "score": 1},
-                {"text": "17 years old and below", "score": 2}
-            ]
-        },
-        {
-            "question": "Number of Previous Misconduct(s)",
-            "options": [
-                {"text": "No Misconduct", "score": 0},
-                {"text": "1 Misconduct", "score": 1},
-                {"text": "2 or more misconducts", "score": 2}
-            ]
-        },
-        {
-            "question": "Extent of Involvement in Organized Crimes",
-            "options": [
-                {"text": "Not a member", "score": 0},
-                {"text": "Member but Inactive", "score": 1},
-                {"text": "Active membership", "score": 2}
-            ]
-        },
-        {
-            "question": "Derogatory Record",
-            "options": [
-                {"text": "No Record", "score": 0},
-                {"text": "With 1 Record", "score": 1},
-                {"text": "With 2 or More Records", "score": 2}
-            ]
-        },
-        {
-            "question": "Type of Offender",
-            "options": [
-                {"text": "Situational/Circumstantial", "score": 0},
-                {"text": "\"Paminsan-minsan\"", "score": 1},
-                {"text": "Career Offender", "score": 2}
-            ]
-        },
-        {
-            "question": "History of Violence",
-            "options": [
-                {"text": "No History of violence", "score": 0},
-                {"text": "1 Incident of violence", "score": 1},
-                {"text": "2 or more history of violence", "score": 2}
-            ]
-        }
-    ],
-    2: [
-        {
-            "question": "Type of Companions",
-            "options": [
-                {"text": "Mostly conventional", "score": 0},
-                {"text": "Sometimes conventional, Sometimes delinquent", "score": 1},
-                {"text": "Mostly deliquent", "score": 2}
-            ]
-        },
-        {
-            "question": "Type of Activities with Companions",
-            "options": [
-                {"text": "Mostly convetional", "score": 0},
-                {"text": "Sometimes conventional, Sometimes delinquent", "score": 1},
-                {"text": "Mostly delinquent", "score": 2}
-            ]
-        },
-        {
-            "question": "Friends' Support",
-            "options": [
-                {"text": "Mostly supportive friends", "score": 0},
-                {"text": "Few supportive friends", "score": 1},
-                {"text": "No supportive friends", "score": 2}
-            ]
-        }
-    ],
-    3: [
-        {
-            "question": "Is it okay to break the rules/laws as long as I can help my family.",
-            "options": [
-                {"text": "No", "score": 0},
-                {"text": "Yes", "score": 2}
-            ]
-        },
-        {
-            "question": "Is it okay to break the rules/laws because I don't know it.",
-            "options": [
-                {"text": "No", "score": 0},
-                {"text": "Yes", "score": 2}
-            ]
-        },
-        {
-            "question": "Is it okay to break the rules/laws when nobody sees me or I don't get caught.",
-            "options": [
-                {"text": "No", "score": 0},
-                {"text": "Yes", "score": 2}
-            ]
-        },
-        {
-            "question": "Is it okay to commit a crime if you are a victim of social injustice/inequality.",
-            "options": [
-                {"text": "No", "score": 0},
-                {"text": "Yes", "score": 2}
-            ]
-        },
-        {
-            "question": "Is it okay to commit a crime when you are in a desperate situation/crisis.",
-            "options": [
-                {"text": "No", "score": 0},
-                {"text": "Yes", "score": 2}
-            ]
-        }
-    ],
-    4: [
-        {
-            "question": "I find it hard to follow rules.",
-            "options": [
-                {"text": "No", "score": 0},
-                {"text": "Yes", "score": 1}
-            ]
-        },
-        {
-            "question": "I lie and cheat to get what I want.",
-            "options": [
-                {"text": "No", "score": 0},
-                {"text": "Yes", "score": 1}
-            ]
-        },
-        {
-            "question": "I act without thinking of the consequences of my actions.",
-            "options": [
-                {"text": "No", "score": 0},
-                {"text": "Yes", "score": 1}
-            ]
-        },
-        {
-            "question": "I easily get irritated or angry.",
-            "options": [
-                {"text": "No", "score": 0},
-                {"text": "Yes", "score": 1}
-            ]
-        },
-        {
-            "question": "I don't care who gets hurt as long as I get what I want.",
-            "options": [
-                {"text": "No", "score": 0},
-                {"text": "Yes", "score": 1}
-            ]
-        },
-        {
-            "question": "I find it hard to follow through with responsibilities/assigned tasks.",
-            "options": [
-                {"text": "No", "score": 0},
-                {"text": "Yes", "score": 1}
-            ]
-        }
-    ],
-    5: [
-        {
-            "question": "Educational Attainment",
-            "options": [
-                {"text": "Vocational/College level & above", "score": 0},
-                {"text": "Grade 7 to 12", "score": 1},
-                {"text": "Grade 6 and below", "score": 2}
-            ]
-        },
-        {
-            "question": "Educational Attachment",
-            "options": [
-                {"text": "Interested in school", "score": 0},
-                {"text": "Lacks interest in school", "score": 1},
-                {"text": "Did not get along well with teachers and other students/No interest in school", "score": 2}
-            ]
-        },
-        {
-            "question": "Overall Conduct in School",
-            "options": [
-                {"text": "Without misdeamenor", "score": 0},
-                {"text": "With misdeamenor", "score": 2}
-            ]
-        },
-        {
-            "question": "Employment Status at the Time of Arrest",
-            "options": [
-                {"text": "Employed", "score": 0},
-                {"text": "Irregurlarly employed", "score": 1},
-                {"text": "Unemployed", "score": 2}
-            ]
-        },
-        {
-            "question": "Employable Skills",
-            "options": [
-                {"text": "With at least one employable skill", "score": 0},
-                {"text": "No employable skill but with potential and capacity to acquire one", "score": 1},
-                {"text": "No Employable Skill", "score": 2}
-            ]
-        },
-        {
-            "question": "Employment History",
-            "options": [
-                {"text": "Treats job seriously; Finds work rewarding; Good relationship with employer and co-workers", "score": 0},
-                {"text": "Inconsistent employment; No employment that lasts 3 months; Minimun attchement to work", "score": 1},
-                {"text": "Does not like/love job; Conflict with the employer; No interest in working; No attachments to work; Frequently fired from work", "score": 2}
-            ]
-        }
-    ],
-    6: [
-        {
-            "question": "Quality of Family/Marital Relationships",
-            "options": [
-                {"text": "With positive influence", "score": 0},
-                {"text": "With occasional negative influence", "score": 1},
-                {"text": "With regular negative influence", "score": 2}
-            ]
-        },
-        {
-            "question": "Parental Guidance and Supervision",
-            "options": [
-                {"text": "Adequate guidance and supervision", "score": 0},
-                {"text": "Minimal guidance and supervision", "score": 1},
-                {"text": "Without guidance and supervision; Overbearing/Over Protective", "score": 2}
-            ]
-        },
-        {
-            "question": "Family Acceptability in the Community",
-            "options": [
-                {"text": "Acceptable", "score": 0},
-                {"text": "Unacceptable", "score": 1},
-                {"text": "Heghly unacceptable", "score": 2}
-            ]
-        },
-        {
-            "question": "Spirituality/Religiosity",
-            "options": [
-                {"text": "Integrated spiritual belief and religous activities", "score": 0},
-                {"text": "Disintegrated spiritual belief but with some manifested positive religious belief", "score": 1},
-                {"text": "Disintegrated religous belief and negative religous activites", "score": 2}
-            ]
-        }
-    ],
-    7: [
-        {
-            "question": "History of Drug Abuse",
-            "options": [
-                {"text": "If client abuse drugs (other than those required for medical reasons)", "score": 1},
-                {"text": "Never", "score": 0}
-            ]
-        },
-        {
-            "question": "Frequency of Drug Use",
-            "options": [
-                {"text": "No Usage", "score": 0},
-                {"text": "At least once a month", "score": 1},
-                {"text": "At least once a week", "score": 2},
-                {"text": "Almost Daily", "score": 3}
-            ]
-        },
-        {
-            "question": "History of Alcohol Abuse",
-            "options": [
-                {"text": "If client abuse alcoholic beverages", "score": 1},
-                {"text": "Never", "score": 0}
-            ]
-        },
-        {
-            "question": "Frequency of Alcohol Use",
-            "options": [
-                {"text": "No Usage", "score": 0},
-                {"text": "At least once a month", "score": 1},
-                {"text": "At least once a week", "score": 2},
-                {"text": "Almost Daily", "score": 3}
-            ]
-        },
-        {
-            "question": "Desire/Urge for substance Use",
-            "options": [
-                {"text": "Never", "score": 0},
-                {"text": "Sometimes", "score": 1},
-                {"text": "Always", "score": 2},
-            ]
-        },
-        {
-            "question": "Cut down on Substance Use (Reverse Coded)",
-            "options": [
-                {"text": "Always Able to Stop", "score": 0},
-                {"text": "Unable to Stop", "score": 1}
-            ]
-        },
-        {
-            "question": "Family History of Substance Use",
-            "options": [
-                {"text": "YES", "score": 1},
-                {"text": "NO", "score": 0}
-            ]
-        }
-    ],
-    8: [
-        {
-            "question": "I can perform my daily activities with minimal support from others",
-            "options": [
-                {"text": "YES", "score": 0},
-                {"text": "NO", "score": 1}
-            ]
-        },
-        {
-            "question": "I can easily make good decisions on my own",
-            "options": [
-                {"text": "YES", "score": 0},
-                {"text": "NO", "score": 1}
-            ]
-        },
-        {
-            "question": "I have experienced sadness for 14 days over the last 6 months",
-            "options": [
-                {"text": "YES", "score": 1},
-                {"text": "NO", "score": 0}
-            ]
-        },
-        {
-            "question": "I have received consultation/treatment/counseling for a psychological/psychiatric problem",
-            "options": [
-                {"text": "YES", "score": 1},
-                {"text": "NO", "score": 0}
-            ]
-        },
-        {
-            "question": "I sometimes hear or see things not normally seen or heard by others",
-            "options": [
-                {"text": "YES", "score": 1},
-                {"text": "NO", "score": 0}
-            ]
-        }
-    ]
-}
-
-# Segment thresholds for program recommendations
-segment_thresholds = {
-    1: {"threshold": 5, "program": "ICARE Program"},
-    2: {"threshold": 4, "program": "Social Integration Program"},
-    3: {"threshold": 4, "program": "Family Counseling Program"},
-    4: {"threshold": 4, "program": "Educational Support Program"},
-    5: {"threshold": 4, "program": "Vocational Training Program"},
-    6: {"threshold": 4, "program": "Substance Abuse Treatment Program"},
-    7: {"threshold": 4, "program": "Mental Health Support Program"},
-    8: {"threshold": 4, "program": "Behavioral Management Program"},
-    9: {"threshold": 4, "program": "Risk Reduction Program"}
-}
-
-# Mandatory programs
-mandatory_programs = [
-    "Monthly/periodic report-in-person",
-    "Monitoring and Supervision",
-    "Therapeutic Community Ladderized Program (TCLP) Mandatory Reinforcing Activities",
-    "Restorative Justice Processes",
-    "Individual/Group Family/Marital Coaching",
-    "Community Work Service/Involvement in community/barangay integration activities",
-    "Spiritual/Moral Formation/Reformation activities"
-]
-
-# Risk level assessment
 def assess_risk_level(total_score):
     if total_score <= 17:
         return {
@@ -408,85 +53,170 @@ def assess_risk_level(total_score):
             "supervision": "Twice a month"
         }
 
-@app.route('/')
+# Index route: collects initial user information and stores it as segment0.
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    # Initialize session
     session.clear()
-    for i in range(1, 10):
-        session[f'segment{i}_scores'] = []
+    if request.method == 'POST':
+        try:
+            # Save index form answers as segment0
+            session['segment0'] = request.form.to_dict()
+            return redirect(url_for('segment', segment_id=1))
+        except Exception as e:
+            logger.error(f"Error in index: {str(e)}")
+            return redirect(url_for('index'))
     return render_template('index.html')
 
+# Segment route: collects answers per segment.
 @app.route('/segment/<int:segment_id>', methods=['GET', 'POST'])
 def segment(segment_id):
     if request.method == 'POST':
-        # Save scores from previous segment
-        prev_segment = segment_id - 1
-        if prev_segment > 0:
-            scores = []
-            for i in range(len(segments[prev_segment])):
-                score = int(request.form.get(f'q{i}', 0))
-                scores.append(score)
-            session[f'segment{prev_segment}_scores'] = scores
+        try:
+            form_data = request.form.to_dict()
+            session[f'segment{segment_id}'] = form_data
             
-    # If we've completed all segments, go to results
-    if segment_id > 9:
-        return redirect(url_for('results'))
-    
-    # Create enumerated questions for Jinja template
-    # Since Jinja doesn't support enumerate() directly
-    enumerated_questions = []
-    for i, question in enumerate(segments[segment_id]):
-        enumerated_questions.append({
-            'index': i,
-            'question': question
-        })
-        
+            if segment_id == 8:
+                # Initialize ordered data dictionary
+                ordered_data = {
+                    "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "Email Address": session.get('segment0', {}).get('email', ''),
+                    "Name of Petitioner/Probation/Parole:": session.get('segment0', {}).get('petitioner_name', ''),
+                    "Length of Sentence:": session.get('segment0', {}).get('sentence_length', ''),
+                    "Name & Position of Inv/Supvg Officer:": session.get('segment0', {}).get('officer_name', ''),
+                    "Chief Probation Officer/Officer-in-Charge:": session.get('segment0', {}).get('chief_officer', '')
+                }
+
+                # Criminal History (Segment 1)
+                seg1 = session.get('segment1', {})
+                ordered_data.update({
+                    "Age at First Misconduct": seg1.get('seg1_q1', ''),
+                    "Number of Previous Misconduct(s)": seg1.get('seg1_q2', ''),
+                    "Extent of Involvement in Organized Crimes": seg1.get('seg1_q3', ''),
+                    "Derogatory Record": seg1.get('seg1_q4', ''),
+                    "Type of Offender": seg1.get('seg1_q5', ''),
+                    "History of Violence": seg1.get('seg1_q6', '')
+                })
+
+                # Pro-Criminal Companions (Segment 2)
+                seg2 = session.get('segment2', {})
+                ordered_data.update({
+                    "Type of Companions": seg2.get('seg2_q1', ''),
+                    "Type of Activities with Companions": seg2.get('seg2_q2', ''),
+                    "Friends' Support": seg2.get('seg2_q3', ''),
+                })
+
+                # Pro-Criminal Attitudes (Segment 3)
+                seg3 = session.get('segment3', {})
+                ordered_data.update({
+                    "Is it okay to break the rules/laws as long as I can help my family.": seg3.get('seg3_q1', ''),
+                    "Is it okay to break the rules/laws because I don't know it.": seg3.get('seg3_q2', ''),
+                    "Is it okay to break the rules/laws when nobody sees me or I don't get caught.": seg3.get('seg3_q3', ''),
+                    "Is it okay to commit a crime if you are a victim of social injustice/inequality.": seg3.get('seg3_q4', ''),
+                    "Is it okay to commit a crime when you are in a desperate situation/crisis.": seg3.get('seg3_q5', '')
+                })
+
+                # Anti-Social Personality (Segment 4)
+                seg4 = session.get('segment4', {})
+                ordered_data.update({
+                    "I find it hard to follow rules.": seg4.get('seg4_q1', ''),
+                    "I lie and cheat to get what I want.": seg4.get('seg4_q2', ''),
+                    "I act without thinking of the consequences of my actions.": seg4.get('seg4_q3', ''),
+                    "I easily get irritated or angry.": seg4.get('seg4_q4', ''),
+                    "I don't care who gets hurt as long as I get what I want.": seg4.get('seg4_q5', ''),
+                    "I find it hard to follow through with responsibilities/assigned tasks.": seg4.get('seg4_q6', '')
+                })
+
+                # Education and Employment (Segment 5)
+                seg5 = session.get('segment5', {})
+                ordered_data.update({
+                    "Educational Attainment": seg5.get('seg5_q1', ''),
+                    "Educational Attachment": seg5.get('seg5_q2', ''),
+                    "Overall Conduct in School": seg5.get('seg5_q3', ''),
+                    "Employment Status at the Time of Arrest": seg5.get('seg5_q4', ''),
+                    "Employable Skills": seg5.get('seg5_q5', ''),
+                    "Employment History": seg5.get('seg5_q6', '')
+                })
+
+                # Family and Marital (Segment 6)
+                seg6 = session.get('segment6', {})
+                ordered_data.update({
+                    "Quality of Family/Marital Relationships": seg6.get('seg6_q1', ''),
+                    "Parental Guidance and Supervision": seg6.get('seg6_q2', ''),
+                    "Family Acceptability in the Community": seg6.get('seg6_q3', ''),
+                    "Spirituality/Religiosity": seg6.get('seg6_q4', '')
+                })
+
+                # Substance Abuse (Segment 7)
+                seg7 = session.get('segment7', {})
+                ordered_data.update({
+                    "History of Drug Abuse": seg7.get('seg7_q1', ''),
+                    "Frequency of Drug Use": seg7.get('seg7_q2', ''),
+                    "History of Alcohol Abuse": seg7.get('seg7_q3', ''),
+                    "Frequency of Alcohol Use": seg7.get('seg7_q4', ''),
+                    "Desire/Urge for substance Use": seg7.get('seg7_q5', ''),
+                    "Cut down on Substance Use (Reverse Coded)": seg7.get('seg7_q6', ''),
+                    "Family History of Substance Use": seg7.get('seg7_q7', '')
+                })
+
+                # Mental Health (Segment 8)
+                seg8 = session.get('segment8', {})
+                ordered_data.update({
+                    "I can perform my daily activities with minimal support from others": seg8.get('seg8_q1', ''),
+                    "I can easily make good decisions on my own": seg8.get('seg8_q2', ''),
+                    "I have experienced sadness for 14 days over the last 6 months": seg8.get('seg8_q3', ''),
+                    "I have received consultation/treatment/counseling for a psychological/psychiatric problem": seg8.get('seg8_q4', ''),
+                    "I sometimes hear or see things not normally seen or heard by others": seg8.get('seg8_q5', '')
+                })
+
+                try:
+                    response = requests.post(
+                        GOOGLE_SCRIPT_URL,
+                        json=ordered_data,
+                        headers={'Content-Type': 'application/json'},
+                        timeout=15
+                    )
+                    
+                    if response.status_code == 200:
+                        session['assessment_results'] = ordered_data
+                        return redirect(url_for('results'))
+                    else:
+                        logger.error(f"Google Sheets Error: Status {response.status_code}")
+                        flash("Failed to save responses. Please try again.")
+                        return redirect(url_for('segment', segment_id=8))
+                        
+                except Exception as e:
+                    logger.error(f"Google Sheets Error: {str(e)}")
+                    flash("Connection error. Please try again.")
+                    return redirect(url_for('segment', segment_id=8))
+
+            return redirect(url_for('segment', segment_id=segment_id + 1))
+            
+        except Exception as e:
+            logger.error(f"Segment Error: {str(e)}")
+            flash("An error occurred. Please try again.")
+            return redirect(url_for('segment', segment_id=segment_id))
+
     return render_template(
-        'segment.html', 
-        segment_id=segment_id, 
-        title=segment_titles[segment_id],
-        enumerated_questions=enumerated_questions,  # Pass enumerated questions
-        next_segment=segment_id + 1
+        "segment.html",
+        segment_id=segment_id,
+        title=segment_titles.get(segment_id, "Unknown Segment")
     )
 
-@app.route('/results')
+# Results page (optional)
+@app.route("/results")
 def results():
-    # Save scores from the last segment
-    scores = []
-    for i in range(len(segments[9])):
-        score = int(request.args.get(f'q{i}', 0))
-    if scores:
-        session['segment9_scores'] = scores
+    complete_data = session.get('assessment_results', {})
+    total_score = complete_data.get('total_score', 0)  # Default to 0 if not set
     
-    # Calculate subtotals for each segment
-    subtotals = {}
-    total_score = 0
-    
-    for i in range(1, 10):
-        segment_scores = session.get(f'segment{i}_scores', [])
-        subtotal = sum(segment_scores)
-        subtotals[i] = subtotal
-        total_score += subtotal
-    
-    # Determine risk level
+    # Get risk assessment based on total score
     risk_assessment = assess_risk_level(total_score)
     
-    # Determine recommended programs based on segment thresholds
-    recommended_programs = []
-    for segment_id, data in segment_thresholds.items():
-        if subtotals.get(segment_id, 0) >= data["threshold"]:
-            recommended_programs.append(data["program"])
-    
     return render_template(
-        'results.html',
-        subtotals=subtotals,
+        "results.html", 
+        data=complete_data, 
         total_score=total_score,
-        risk_assessment=risk_assessment,
-        recommended_programs=recommended_programs,
-        mandatory_programs=mandatory_programs,
-        segment_titles=segment_titles,
-        segment_thresholds=segment_thresholds  # Add this line
+        risk_assessment=risk_assessment
     )
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
