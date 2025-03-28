@@ -10,9 +10,15 @@
     <div class="container results">
         <h1>Risk Assessment Results</h1>
         
+        {% if error_message %}
+        <div class="error-message">
+            <p>{{ error_message }}</p>
+            <a href="{{ url_for('index') }}" class="btn">Return to Start</a>
+        </div>
+        {% else %}
         <div class="summary">
-            <h2>Overall Risk Level: {{ risk_assessment.level }}</h2>
-            <p>Total Score: {{ total_score }}</p>
+            <h2>Overall Risk Level: {{ risk_assessment.level if risk_assessment else 'Not Available' }}</h2>
+            <p>Total Score: {{ total_score if total_score else 'Not Available' }}</p>
         </div>
         
         <div class="risk-details">
@@ -76,6 +82,7 @@
         
         <div class="segment-scores">
             <h3>Segment Scores</h3>
+            {% if subtotals %}
             <table class="scores-table">
                 <thead>
                     <tr>
@@ -107,6 +114,9 @@
                     </tr>
                 </tbody>
             </table>
+            {% else %}
+            <p>No segment scores available. Please complete the assessment.</p>
+            {% endif %}
         </div>
         
         <div class="programs">
@@ -131,10 +141,26 @@
                 {% endif %}
             </div>
         </div>
+        {% endif %}
         
         <div class="navigation">
             <a href="{{ url_for('index') }}" class="btn">Start New Assessment</a>
         </div>
     </div>
+
+    <script>
+    // Add error handling for missing data
+    document.addEventListener('DOMContentLoaded', function() {
+        const tables = document.querySelectorAll('table');
+        tables.forEach(table => {
+            if (table.rows.length === 0) {
+                table.style.display = 'none';
+                const message = document.createElement('p');
+                message.textContent = 'No data available';
+                table.parentNode.insertBefore(message, table);
+            }
+        });
+    });
+    </script>
 </body>
 </html>
