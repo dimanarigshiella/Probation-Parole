@@ -8,11 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
-<body = class="index-body">
+<body class="index-body">
 
     <img src="{{ url_for('static', filename='images/J.png') }}" alt="New Image" class="new-image">
 
-
+    <form method="post" action="{{ url_for('index') }}">
         <div class="main-content">
             <table class="main-table">
                  <tr>
@@ -31,40 +31,52 @@
                 </tr>
                 <tr>
                     <td class="label" colspan="2">
+                        Email Address:
+                        <input type="email" class="input-box" name="email" placeholder="Enter Email Address" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label" colspan="2">
                         Name of Petitioner/Probation/Parole:
-                        <input type="text" class="input-box" placeholder="Enter Details Here">
+                        <input type="text" class="input-box" name="petitioner_name" placeholder="Enter Details Here" required>
                     </td>
                 </tr>
                 <tr>
                     <td class="label" colspan="2">
                         Length of Sentence:
-                        <select class="dropdown-box">
+                        <select class="dropdown-box" name="sentence_length" required>
                             <option value="" disabled selected> </option>
-                            <option value="2-years-or-less">2 Years or Less</option>
-                            <option value="above-2-years">Above 2 Years</option>
+                            <option value="less-than-1">Less Than 1 Year</option>
+                            <option value="1-year">1 Year</option>
+                            <option value="2-years">2 Years</option>
+                            <option value="3-years">3 Years</option>
+                            <option value="4-years">4 Years</option>
+                            <option value="5-years">5 Years</option>
+                            <option value="6-years">6 Years</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td class="label" colspan="2">
                         Name & Position of Inv/Supvg Officer:
-                        <input type="text" class="input-box" placeholder="Enter Details Here">
+                        <input type="text" class="input-box" name="officer_name" placeholder="Enter Details Here" required>
                     </td>
                 </tr>
                 <tr>
                     <td class="label" colspan="2">
                         Chief Probation Officer/Officer-in-Charge:
-                        <input type="text" class="input-box" placeholder="Enter Details Here">
+                        <input type="text" class="input-box" name="chief_officer" placeholder="Enter Details Here" required>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2" class="table-button">
-                        <a href="{{ url_for('segment', segment_id=1) }}" class="btn">Start Questionnaire</a>
+                        <button type="submit" class="btn">Start Assessment</button>
                     </td>
                 </tr>
             </table>
         </div>
+    </form>
         
-        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
